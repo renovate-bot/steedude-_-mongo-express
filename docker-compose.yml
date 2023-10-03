@@ -5,8 +5,8 @@ services:
     image: mongo
     volumes:
       - db-data:/data/db
-    networks:
-      - mongo-tier
+    # networks:
+    #   - mongo-tier
     ports:
       - 27017:27017
     environment:
@@ -18,8 +18,8 @@ services:
     restart: always
     depends_on:
       - mongodb
-    networks:
-      - mongo-tier
+    # networks:
+    #   - mongo-tier
     ports:
       - 8081:8081
     environment:
@@ -45,13 +45,13 @@ services:
     working_dir: /app
     volumes:
       - './app:/app'
-    networks:
-      - mongo-tier
+    # networks:
+    #   - mongo-tier
     depends_on:
       - mongodb
 
-networks:
-  mongo-tier:
+# networks:
+#   mongo-tier:
 
 volumes:
   db-data:
