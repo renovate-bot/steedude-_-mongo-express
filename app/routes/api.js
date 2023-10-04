@@ -1,56 +1,45 @@
 const express = require('express')
 const router = express.Router()
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const passport = require('passport')
+const verifyJWT = require('../utils/verifyJWT')
 const User = require('../models/user')
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` })
 
+function getUserInfo(user) {
+  return {
+    username: user.username,
+    updated: user.updated,
+  }
+}
 //----註冊-----
 router.post('/register', async (req, res) => {
   const { username, password, confirmPassword } = req.body
-  console.log(username, password, confirmPassword);
   //防呆
   if (!username || !password || !confirmPassword) {
-    return res
-      .status(400)
-      .json({ title: 'error', message: 'missing information' })
+    return res.status(422).json({ resultCode: 1001 })
   }
   if (password !== confirmPassword) {
-    return res.status(400).json({
-      title: 'error',
-      message: 'password and confirmPassword are not the same',
-    })
+    return res.status(422).json({ resultCode: 1002 })
   }
   try {
     //確認有無重複帳號
     const searchResult = await User.findOne({ username: username })
     if (searchResult != null) {
-      return res.status(400).json({
-        title: 'error',
-        message: 'Duplicate username',
-      })
+      return res.status(409).json({ resultCode: 1003 })
     }
     //新增帳號
     const doc = {
       username: username,
       password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
     }
-    const insertResult = await User.create(doc)
+    await User.create(doc)
     return res.status(200).json({
-      title: 'success',
-      message: 'A document was inserted',
-      resultMap: {
-        token: jwt.sign({ id: insertResult._id }, process.env.JWT_SECRET),
-      },
+      resultCode: 200,
     })
-  } catch (e) {
-    console.log(e)
-    return res.status(400).json({
-      title: 'error',
-      message: e,
-    })
+  } catch (err) {
+    return res.status(400).json({ resultCode: 1000, message: err })
   }
 })
 
@@ -59,49 +48,43 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body
   //防呆
   if (!username || !password) {
-    return res
-      .status(400)
-      .json({ title: 'error', message: 'missing information' })
+    return res.status(422).json({ resultCode: 1001 })
   }
   try {
     const searchResult = await User.findOne({ username: username })
+    //帳號或密碼錯誤
     if (
       searchResult == null ||
       !bcrypt.compareSync(password, searchResult.password)
     ) {
-      return res
-        .status(400)
-        .json({ title: 'error', message: 'Incorrect username or password' })
-    } else {
-      return res.json({
-        title: 'success',
-        message: 'login success',
-        resultMap: {
-          token: jwt.sign({ id: searchResult._id }, process.env.JWT_SECRET),
-        },
-      })
+      return res.status(401).json({ resultCode: 1004 })
     }
+    return res.json({
+      resultCode: 200,
+      resultMap: {
+        token: jwt.sign({ id: searchResult._id }, process.env.JWT_SECRET, {
+          expiresIn: '30m',
+        }),
+        user: getUserInfo(searchResult),
+      },
+    })
   } catch (err) {
-    return res.status(400).json({ title: 'error', message: err })
+    return res.status(400).json({ resultCode: 1000, message: err })
   }
 })
 
+router.post('/logout', async (req, res) => {
+  return res.json({
+    resultCode: 200,
+  })
+})
 //-----測試拿資料-----
-router.get(
-  '/test',
-  passport.authenticate('token', {
-    session: false,
-  }),
-  async (req, res) => {
-    console.log(req.user.username + ' get data')
-    return res.status(200).json({
-      title: 'success',
-      message: 'get data success',
-      resultMap: {
-        data: [1, 2, 3, 4],
-      },
-    })
-  }
-)
-
+router.get('/test', verifyJWT, async (req, res) => {
+  return res.status(200).json({
+    resultCode: 200,
+    resultMap: {
+      data: [1, 2, 3, 4],
+    },
+  })
+})
 module.exports = router
