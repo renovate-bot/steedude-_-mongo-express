@@ -4,7 +4,7 @@ services:
   mongodb:
     image: mongo
     volumes:
-      - db-data:/data/db
+      - ./db-data:/data/db
     # networks:
     #   - mongo-tier
     ports:
@@ -41,10 +41,10 @@ services:
     image: node:20-slim
     command: sh -c "npm install && npm run dev"
     ports:
-      - 80:8081
+      - 80:8080
     working_dir: /app
     volumes:
-      - './app:/app'
+      - './:/app'
     # networks:
     #   - mongo-tier
     depends_on:
@@ -52,6 +52,3 @@ services:
 
 # networks:
 #   mongo-tier:
-
-volumes:
-  db-data:
