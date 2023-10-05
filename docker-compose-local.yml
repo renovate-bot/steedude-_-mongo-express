@@ -6,8 +6,6 @@ services:
     restart: always
     volumes:
       - db-data:/data/db
-    # networks:
-    #   - mongo-tier
     ports:
       - 27017:27017
     environment:
@@ -19,8 +17,6 @@ services:
     restart: always
     depends_on:
       - mongodb
-    # networks:
-    #   - mongo-tier
     ports:
       - 8081:8081
     environment:
@@ -33,21 +29,9 @@ services:
 
   # redis1:
   #   container_name: redis1
-  #   image: redis
   #   command: redis-server --requirepass asdf
   #   ports:
   #   - '6379:6379'
 
-  app:
-    image: 495687440051.dkr.ecr.ap-northeast-1.amazonaws.com/mongo-express:latest
-    command: sh -c "npm install && npm run dev"
-    ports:
-      - 80:8080
-    working_dir: /app
-    depends_on:
-      - mongodb
-
-# networks:
-#   mongo-tier:
 volumes:
   db-data:
