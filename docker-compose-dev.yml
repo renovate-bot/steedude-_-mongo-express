@@ -39,7 +39,7 @@ services:
   #   - '6379:6379'
 
   app:
-    image: steedude/mongo-express:latest
+    image: 495687440051.dkr.ecr.ap-northeast-1.amazonaws.com/mongo-express:latest
     command: sh -c "npm install && npm run dev"
     ports:
       - 80:8080
