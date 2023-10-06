@@ -34,7 +34,7 @@ services:
   #   ports:
   #   - '6379:6379'
 
-  mongo-express-dev:
+  app:
     image: 495687440051.dkr.ecr.ap-northeast-1.amazonaws.com/mongo-express:latest
     command: sh -c "npm install && npm run start:dev"
     ports:
@@ -45,6 +45,7 @@ services:
     environment:
       - VIRTUAL_HOST=www.dev.silver-tercel.com,dev.silver-tercel.com
       - LETSENCRYPT_HOST=www.dev.silver-tercel.com,dev.silver-tercel.com
+      - LETSENCRYPT_EMAIL=steedude@gmail.com
       - VIRTUAL_PORT=8080
 
   nginx-proxy:
@@ -63,12 +64,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - acme:/etc/acme.sh
-      - certs:/etc/nginx/certs
-      - vhost:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
+      # - certs:/etc/nginx/certs
+      # - vhost:/etc/nginx/vhost.d
+      # - html:/usr/share/nginx/html
+    volumes-from:
+      - nginx-proxy
     environment:
       - DEFAULT_EMAIL=steedude@gmail.com
-      - NGINX_PROXY_CONTAINER=nginx-proxy
+      # - NGINX_PROXY_CONTAINER=nginx-proxy
 
 volumes:
   db-data:
