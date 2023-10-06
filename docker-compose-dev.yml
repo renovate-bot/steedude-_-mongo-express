@@ -56,23 +56,21 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
+      - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
-      - conf.d:/etc/nginx/conf.d
-      - htpasswd:/etc/nginx/htpasswd:ro
 
   nginx-proxy-acme:
     image: nginxproxy/acme-companion
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - acme.sh:/etc/acme.sh
-      - conf.d:/etc/nginx/conf.d
+      - acme:/etc/acme.sh
+      # - /var/run/docker.sock:/tmp/docker.sock:ro
       - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
+      - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
     environment:
       - DEFAULT_EMAIL=steedude@gmail.com
-      # - NGINX_PROXY_CONTAINER=nginx-proxy
+      - NGINX_PROXY_CONTAINER=nginx-proxy
 
 volumes:
   db-data:
