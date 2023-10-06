@@ -50,6 +50,8 @@ services:
 
   nginx-proxy:
     image: nginxproxy/nginx-proxy
+    labels:
+      - 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy'
     ports:
       - 80:80
       - 443:443
@@ -72,8 +74,8 @@ services:
       - html:/usr/share/nginx/html
     environment:
       - DEFAULT_EMAIL=steedude@gmail.com
-      - NGINX_PROXY_CONTAINER=nginx-proxy
-      - NGINX_DOCKER_GEN_CONTAINER=nginx-proxy
+      # - NGINX_PROXY_CONTAINER=nginx-proxy
+      # - NGINX_DOCKER_GEN_CONTAINER=nginx-proxy
 
 volumes:
   db-data:
