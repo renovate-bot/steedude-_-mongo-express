@@ -39,6 +39,7 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: sh -c "npm install && npm run start:dev"
+    restart: always
     ports:
       - 8080:8080
     working_dir: /app
@@ -76,8 +77,6 @@ services:
       - html:/usr/share/nginx/html
     environment:
       - DEFAULT_EMAIL=steedude@gmail.com
-      # - NGINX_PROXY_CONTAINER=nginx-proxy
-      # - NGINX_DOCKER_GEN_CONTAINER=nginx-proxy
 
 volumes:
   db-data:
