@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   mongodb:
@@ -6,22 +6,17 @@ services:
     restart: always
     volumes:
       - db-data:/data/db
-    # networks:
-    #   - mongo-tier
     ports:
-      - 27017:27017
+      - 27027:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: asdf
-    
 
   mongo-express:
     image: mongo-express
     restart: always
     depends_on:
       - mongodb
-    # networks:
-    #   - mongo-tier
     ports:
       - 8081:8081
     environment:
@@ -40,19 +35,52 @@ services:
   #   - '6379:6379'
 
   app:
-    image: node:20-slim
-    command: sh -c "npm install && npm run dev"
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: sh -c "npm install && npm run start:prod"
+    restart: always
     ports:
-      - 80:8080
+      - 8090:8080
     working_dir: /app
-    volumes:
-      - './:/app'
-    # networks:
-    #   - mongo-tier
     depends_on:
       - mongodb
+    environment:
+      - VIRTUAL_HOST=prod.silver-tercel.com
+      - LETSENCRYPT_HOST=prod.silver-tercel.com
+      - LETSENCRYPT_EMAIL=steedude@gmail.com
+      - VIRTUAL_PORT=8080
 
-# networks:
-#   mongo-tier:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    labels:
+      - 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy'
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_EMAIL=steedude@gmail.com
+
 volumes:
   db-data:
+  vhost:
+  html:
+  certs:
+  acme:

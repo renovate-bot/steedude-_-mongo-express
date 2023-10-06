@@ -26,6 +26,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: asdf
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: admin123
+      VIRTUAL_PORT: 8081
 
   # redis1:
   #   container_name: redis1
