@@ -62,6 +62,7 @@ services:
 
   nginx-proxy-acme:
     image: nginxproxy/acme-companion
+    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - acme:/etc/acme.sh
