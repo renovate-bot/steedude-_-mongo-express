@@ -43,8 +43,8 @@ services:
     depends_on:
       - mongodb
     environment:
-      - VIRTUAL_HOST=www.dev.silver-tercel.com,dev.silver-tercel.com
-      - LETSENCRYPT_HOST=www.dev.silver-tercel.com,dev.silver-tercel.com
+      - VIRTUAL_HOST=dev.silver-tercel.com
+      - LETSENCRYPT_HOST=dev.silver-tercel.com
       - LETSENCRYPT_EMAIL=steedude@gmail.com
       - VIRTUAL_PORT=8080
 
@@ -63,13 +63,14 @@ services:
     image: nginxproxy/acme-companion
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
       - acme:/etc/acme.sh
       - certs:/etc/nginx/certs
       - vhost:/etc/nginx/vhost.d
       - html:/usr/share/nginx/html
     environment:
       - DEFAULT_EMAIL=steedude@gmail.com
-      # - NGINX_PROXY_CONTAINER=nginx-proxy
+      - NGINX_PROXY_CONTAINER=nginx-proxy
 
 volumes:
   db-data:
