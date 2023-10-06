@@ -14,7 +14,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: asdf
 
   mongo-express:
-    name: mongo-express
+    name: mongo-express-viewer
     image: mongo-express
     restart: always
     depends_on:
