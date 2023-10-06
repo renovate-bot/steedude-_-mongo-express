@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   mongodb:
-    name: mongodb
     image: mongo
     restart: always
     volumes:
@@ -14,7 +13,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: asdf
 
   mongo-express:
-    name: mongo-express-viewer
     image: mongo-express
     restart: always
     depends_on:
@@ -37,7 +35,6 @@ services:
   #   - '6379:6379'
 
   app:
-    name: app
     image: 495687440051.dkr.ecr.ap-northeast-1.amazonaws.com/mongo-express:latest
     command: sh -c "npm install && npm run start:dev"
     ports:
