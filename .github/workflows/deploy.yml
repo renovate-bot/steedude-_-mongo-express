@@ -18,7 +18,5 @@ jobs:
           script: |
             cd mongo-express/
             git pull
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
             docker-compose -f docker-compose-dev.yml build
             docker-compose -f docker-compose-dev.yml up -d
