@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  mongodb:
+  mongodb-dev:
     image: mongo
     restart: always
     volumes:
@@ -12,11 +12,22 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: asdf
 
-  mongo-express:
+  mongodb-prod:
+    image: mongo
+    restart: always
+    volumes:
+      - db-data:/data/db
+    ports:
+      - 37017:37017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: asdf
+
+  mongo-express-dev:
     image: mongo-express
     restart: always
     depends_on:
-      - mongodb
+      - mongodb-dev
     ports:
       - 8081:8081
     environment:
@@ -28,6 +39,22 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: admin123
       VIRTUAL_PORT: 8081
 
+  mongo-express-prod:
+    image: mongo-express
+    restart: always
+    depends_on:
+      - mongodb-prod
+    ports:
+      - 18081:18081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: true
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: asdf
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+      VIRTUAL_PORT: 18081
+
   # redis1:
   #   container_name: redis1
   #   image: redis
@@ -35,7 +62,7 @@ services:
   #   ports:
   #   - '6379:6379'
 
-  app:
+  app-dev:
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -52,13 +79,30 @@ services:
       - LETSENCRYPT_EMAIL=steedude@gmail.com
       # - VIRTUAL_PORT=8080
 
+  app-prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: sh -c "npm install && npm run start:prod"
+    restart: always
+    ports:
+      - 18080:18080
+    working_dir: /app
+    depends_on:
+      - mongodb
+    environment:
+      - VIRTUAL_HOST=prod.silver-tercel.com
+      - LETSENCRYPT_HOST=prod.silver-tercel.com
+      - LETSENCRYPT_EMAIL=steedude@gmail.com
+      # - VIRTUAL_PORT=8080
+
   nginx-proxy:
     image: nginxproxy/nginx-proxy
     labels:
       - 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy'
     ports:
-      - 8080:80
-      - 8443:443
+      - 80:80
+      - 443:443
     restart: always
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
