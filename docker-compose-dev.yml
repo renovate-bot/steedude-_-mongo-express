@@ -72,7 +72,7 @@ services:
       - 8080:8080
     working_dir: /app
     depends_on:
-      - mongodb
+      - mongodb-dev
     environment:
       - VIRTUAL_HOST=dev.silver-tercel.com
       - LETSENCRYPT_HOST=dev.silver-tercel.com
@@ -89,7 +89,7 @@ services:
       - 18080:18080
     working_dir: /app
     depends_on:
-      - mongodb
+      - mongodb-prod
     environment:
       - VIRTUAL_HOST=prod.silver-tercel.com
       - LETSENCRYPT_HOST=prod.silver-tercel.com
