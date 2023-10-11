@@ -124,7 +124,8 @@ services:
       - DEFAULT_EMAIL=steedude@gmail.com
 
 volumes:
-  db-data:
+  db-data-dev:
+  db-data-prod:
   vhost:
   html:
   certs:
