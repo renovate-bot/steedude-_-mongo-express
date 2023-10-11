@@ -57,8 +57,8 @@ services:
     labels:
       - 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy'
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
+      - 8443:443
     restart: always
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
