@@ -18,5 +18,6 @@ jobs:
           script: |
             cd mongo-app/
             git pull
+            docker ps|grep mongo |awk  '{print $1}'|xargs docker kill
             docker compose -f docker-compose-dev.yml build
             docker compose -f docker-compose-dev.yml up -d
