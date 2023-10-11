@@ -5,7 +5,7 @@ services:
     image: mongo
     restart: always
     volumes:
-      - db-data:/data/db
+      - db-data-dev:/data/db
     ports:
       - 27017:27017
     environment:
@@ -16,7 +16,7 @@ services:
     image: mongo
     restart: always
     volumes:
-      - db-data:/data/db
+      - db-data-prod:/data/db
     ports:
       - 37017:27017
     environment:
