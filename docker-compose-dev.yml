@@ -7,7 +7,7 @@ services:
     volumes:
       - db-data:/data/db
     ports:
-      - 37017:27017
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: asdf
@@ -18,7 +18,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      - 38081:8081
+      - 8081:8081
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb
       ME_CONFIG_MONGODB_ENABLE_ADMIN: true
@@ -42,7 +42,7 @@ services:
     command: sh -c "npm install && npm run start:dev"
     restart: always
     ports:
-      - 38080:8080
+      - 8080:8080
     working_dir: /app
     depends_on:
       - mongodb
@@ -50,15 +50,15 @@ services:
       - VIRTUAL_HOST=dev.silver-tercel.com
       - LETSENCRYPT_HOST=dev.silver-tercel.com
       - LETSENCRYPT_EMAIL=steedude@gmail.com
-      - VIRTUAL_PORT=38080
+      - VIRTUAL_PORT=8080
 
   nginx-proxy:
     image: nginxproxy/nginx-proxy
     labels:
       - 'com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy'
     ports:
-      - 30080:80
-      - 30443:443
+      - 80:80
+      - 443:443
     restart: always
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
