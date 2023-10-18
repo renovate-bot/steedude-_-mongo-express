@@ -18,6 +18,11 @@ jobs:
           script: |
             cd mongo-app/
             git pull
-            docker ps|grep mongo |awk  '{print $1}'|xargs docker kill
-            docker compose -f docker-compose-dev.yml build
-            docker compose -f docker-compose-dev.yml up -d
+            if [[ ! $(docker network ls -q -f name=^shared_network$) ]]; then
+              docker network create shared_network
+            fi
+            if [[ ! $(docker ps -q -f name=^nginx$) ]]; then
+              docker-compose -f dc-nginx.yml up -d
+            fi
+            docker-compose -p app-prod --env-file dc-service-prod.env -f dc-service.yml build
+            docker-compose -p app-prod --env-file dc-service-prod.env -f dc-service.yml up -d
