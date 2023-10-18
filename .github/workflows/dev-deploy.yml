@@ -1,0 +1,28 @@
+name: deploy
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands to develop
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SECRET }}
+          script: |
+            cd mongo-app/
+            git pull
+            if [[ ! $(docker network ls -q -f name=^shared_network$) ]]; then
+              docker network create shared_network
+            fi
+            if [[ ! $(docker ps -q -f name=^nginx$) ]]; then
+              docker-compose -f dc-nginx.yml up -d
+            fi
+            docker-compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml build
+            docker-compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml up -d
