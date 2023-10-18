@@ -17,12 +17,12 @@ jobs:
           key: ${{ secrets.DEPLOY_SECRET }}
           script: |
             cd mongo-app/
-            git pull
+            git pull origin dev
             if [[ ! $(docker network ls -q -f name=^shared_network$) ]]; then
               docker network create shared_network
             fi
             if [[ ! $(docker ps -q -f name=^nginx$) ]]; then
-              docker-compose -f dc-nginx.yml up -d
+              docker compose -f dc-nginx.yml up -d
             fi
-            docker-compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml build
-            docker-compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml up -d
+            docker compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml build
+            docker compose -p app-dev --env-file dc-service-dev.env -f dc-service.yml up -d
